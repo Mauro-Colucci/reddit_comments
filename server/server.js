@@ -144,21 +144,20 @@ app.put("/posts/:postId/comments/:commentId", async (req, res) => {
         .status(401)
         .json(createHttpError("you can only edit your messages"));
     }
-
-    try {
-      const data = await prisma.comment.update({
-        where: {
-          id: req.params.commentId,
-        },
-        data: {
-          message: req.body.message,
-        },
-        select: { message: true },
-      });
-      res.status(200).json(data);
-    } catch (err) {
-      res.status(500).json(err);
-    }
+  } catch (err) {
+    res.status(500).json(err);
+  }
+  try {
+    const data = await prisma.comment.update({
+      where: {
+        id: req.params.commentId,
+      },
+      data: {
+        message: req.body.message,
+      },
+      select: { message: true },
+    });
+    res.status(200).json(data);
   } catch (err) {
     res.status(500).json(err);
   }
@@ -178,17 +177,17 @@ app.delete("/posts/:postId/comments/:commentId", async (req, res) => {
         .status(401)
         .json(createHttpError("you can only delete your messages"));
     }
-    try {
-      const data = await prisma.comment.delete({
-        where: {
-          id: req.params.commentId,
-        },
-        select: { id: true },
-      });
-      return res.status(200).json(data);
-    } catch (err) {
-      res.status(500).json(err);
-    }
+  } catch (err) {
+    res.status(500).json(err);
+  }
+  try {
+    const data = await prisma.comment.delete({
+      where: {
+        id: req.params.commentId,
+      },
+      select: { id: true },
+    });
+    return res.status(200).send(data);
   } catch (err) {
     res.status(500).json(err);
   }
@@ -199,42 +198,44 @@ app.post("/posts/:postId/comments/:commentId/toggleLike", async (req, res) => {
     commentId: req.params.commentId,
     userId: req.cookies.userId,
   };
+  let like;
 
   try {
-    const like = await prisma.like.findUnique({
+    like = await prisma.like.findUnique({
       where: {
         userId_commentId: data,
       },
     });
-    if (like == null) {
-      try {
-        return res.status(200).json(
-          await prisma.like.create({ data }).then(() => {
-            return { addLike: true };
-          })
-        );
-      } catch (err) {
-        res.status(500).json(err);
-      }
-    } else {
-      try {
-        return res.status(200).json(
-          await prisma.like
-            .delete({
-              where: {
-                userId_commentId: data,
-              },
-            })
-            .then(() => {
-              return { addLike: false };
-            })
-        );
-      } catch (err) {
-        res.status(500).json(err);
-      }
-    }
   } catch (err) {
     res.status(500).json(err);
+  }
+
+  if (like == null) {
+    try {
+      return res.status(200).json(
+        await prisma.like.create({ data }).then(() => {
+          return { addLike: true };
+        })
+      );
+    } catch (err) {
+      res.status(500).json(err);
+    }
+  } else {
+    try {
+      return res.status(200).json(
+        await prisma.like
+          .delete({
+            where: {
+              userId_commentId: data,
+            },
+          })
+          .then(() => {
+            return { addLike: false };
+          })
+      );
+    } catch (err) {
+      res.status(500).json(err);
+    }
   }
 });
 
