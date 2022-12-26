@@ -52,7 +52,9 @@ app.get("/posts", async (req, res) => {
     });
     res.status(200).json(data);
   } catch (err) {
-    res.status(500).json(err);
+    res.status(500).json(createHttpError(err.message));
+    //res.status(500).json(err);
+    //  if (error) return app.httpErrors.internalServerError(error.message);
   }
 });
 
@@ -96,7 +98,8 @@ app.get("/posts/:id", async (req, res) => {
       });
     res.status(200).json(data);
   } catch (err) {
-    res.status(500).json(err);
+    res.status(500).json(createHttpError(err.message));
+    //res.status(500).json(err);
   }
 });
 
@@ -124,7 +127,9 @@ app.post("/posts/:id/comments", async (req, res) => {
         };
       });
     return res.status(200).json(data);
-  } catch (err) {}
+  } catch (err) {
+    res.status(500).json(createHttpError(err.message));
+  }
 });
 
 app.put("/posts/:postId/comments/:commentId", async (req, res) => {
@@ -145,7 +150,8 @@ app.put("/posts/:postId/comments/:commentId", async (req, res) => {
         .json(createHttpError("you can only edit your messages"));
     }
   } catch (err) {
-    res.status(500).json(err);
+    res.status(500).json(createHttpError(err.message));
+    //res.status(500).json(err);
   }
   try {
     const data = await prisma.comment.update({
@@ -159,7 +165,8 @@ app.put("/posts/:postId/comments/:commentId", async (req, res) => {
     });
     res.status(200).json(data);
   } catch (err) {
-    res.status(500).json(err);
+    res.status(500).json(createHttpError(err.message));
+    //res.status(500).json(err);
   }
 });
 
@@ -178,7 +185,8 @@ app.delete("/posts/:postId/comments/:commentId", async (req, res) => {
         .json(createHttpError("you can only delete your messages"));
     }
   } catch (err) {
-    res.status(500).json(err);
+    res.status(500).json(createHttpError(err.message));
+    //res.status(500).json(err);
   }
   try {
     const data = await prisma.comment.delete({
@@ -189,7 +197,8 @@ app.delete("/posts/:postId/comments/:commentId", async (req, res) => {
     });
     return res.status(200).send(data);
   } catch (err) {
-    res.status(500).json(err);
+    res.status(500).json(createHttpError(err.message));
+    //res.status(500).json(err);
   }
 });
 
@@ -207,7 +216,8 @@ app.post("/posts/:postId/comments/:commentId/toggleLike", async (req, res) => {
       },
     });
   } catch (err) {
-    res.status(500).json(err);
+    res.status(500).json(createHttpError(err.message));
+    //res.status(500).json(err);
   }
 
   if (like == null) {
@@ -218,7 +228,8 @@ app.post("/posts/:postId/comments/:commentId/toggleLike", async (req, res) => {
         })
       );
     } catch (err) {
-      res.status(500).json(err);
+      res.status(500).json(createHttpError(err.message));
+      //res.status(500).json(err);
     }
   } else {
     try {
@@ -234,7 +245,7 @@ app.post("/posts/:postId/comments/:commentId/toggleLike", async (req, res) => {
           })
       );
     } catch (err) {
-      res.status(500).json(err);
+      //res.status(500).json(err);
     }
   }
 });
