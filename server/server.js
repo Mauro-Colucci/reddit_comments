@@ -27,7 +27,7 @@ app.addHook("onRequest", (req, res, done) => {
 });
 const prisma = new PrismaClient();
 
-//faking user id by getting the id from mysql with a IIFE
+//faking user id by getting the id from postgre with a IIFE
 const CURRENT_USER_ID = (
   await prisma.user.findFirst({
     where: { name: "Mauro" },
